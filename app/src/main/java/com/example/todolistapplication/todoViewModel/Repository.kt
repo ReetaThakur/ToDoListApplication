@@ -3,6 +3,8 @@ package com.example.todolistapplication.todoViewModel
 import androidx.lifecycle.LiveData
 import com.example.todolistapplication.data.ToDoTable
 import com.example.todolistapplication.data.TodoDao
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Observer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,7 +30,7 @@ class Repository @Inject constructor(private val dao: TodoDao) {
         dao.deleteTask(todo)
     }
 
-    fun getAllTask():LiveData<List<ToDoTable>>{
+    fun getAllTask():Flowable<List<ToDoTable>>{
         return dao.getAllTask()
     }
 }

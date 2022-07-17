@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
@@ -20,6 +21,12 @@ import com.example.todolistapplication.data.ToDoTable
 import com.example.todolistapplication.databinding.ActivityMainBinding
 import com.example.todolistapplication.todoViewModel.TodoViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.schedulers.Schedulers.io
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,15 +53,58 @@ class MainActivity : AppCompatActivity(),ClickListner {
             startActivity(intent)
         }
 
-        viewModel.getAllTask().observe(this) {
-            todoList.clear()
-            todoList.addAll(it)
-            setRecyclerView()
-            todoAdapter.notifyDataSetChanged()
-        }
+//        viewModel.getAllTask().observe(this) {
+//            todoList.clear()
+//            todoList.addAll(it)
+//            setRecyclerView()
+//            todoAdapter.notifyDataSetChanged()
+//        }
+
+        setObserbale()
 
 
     }
+
+    private fun setObserbale(){
+        viewModel.getAllTask()?.let {
+            viewModel.getAllTask()!!.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { todo ->
+                    Log.v("reeta", "${todo.size}")
+                    todoList.clear()
+                    todoList.addAll(todo)
+                    setRecyclerView()
+                    todoAdapter.notifyDataSetChanged()
+                }
+
+        }
+    }
+
+//    fun setRxjava(){
+//        viewModel.getAllTask().subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe(object : Observer<List<ToDoTable>> {
+//                override fun onSubscribe(d: Disposable) {
+//                    d?.let {
+//                    it
+//                    }
+//                }
+//
+//                override fun onNext(t: List<ToDoTable>) {
+//                    Log.v()
+//                }
+//
+//                override fun onError(e: Throwable) {
+//                    e?.message?.let { Log.i("ViewModel", it) }
+//                }
+//
+//                override fun onComplete() {
+//                    Log.i("ViewModel","Task Completed")
+//                }
+//
+//            }
+//
+//    }
 
 
 
